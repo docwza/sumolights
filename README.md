@@ -17,6 +17,8 @@ Visualize results with:
 ```
 python graph_results.py
 ```
+![Screenshot](samples/travel_time.pdf)
+![Screenshot](samples/intersection_moe.pdf)
 
 ## Optimizing hyperparameters
 Search for optimal hyperparameters for each controller:
@@ -29,3 +31,5 @@ Visualize hyperparameters with:
 ```
 python graph_results.py -type hp
 ```
+![Screenshot](samples/tsc_hp.pdf)
+![Screenshot](samples/hp.pdf)
