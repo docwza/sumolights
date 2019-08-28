@@ -1,6 +1,15 @@
 # sumolights
 SUMO adaptive traffic signal control - DQN, DDPG, Webster's, Max-pressure, Self-Organizing Traffic Lights
 
+## Setup
+
+Install SUMO traffic microsimulator by [following instructions here](https://sumo.dlr.de/wiki/Installing) (v1.2).
+
+Using Python 3, create a virtual environment and then install dependancies with:
+```
+pip install -r requirements.txt
+```
+
 ## Comparing adaptive traffic signal controllers
 First train reinforcement learning controllers:
 ```
