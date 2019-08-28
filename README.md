@@ -8,7 +8,7 @@ First train reinforcement learning controllers:
 ./train_ddpg.sh
 ```
 
-Then execute simulations to generate performande results for all controllers:
+Then execute simulations to generate performance results for all controllers:
 ```
 ./gen_results.sh
 ```
