@@ -1,6 +1,8 @@
 # sumolights
 SUMO adaptive traffic signal control - DQN, DDPG, Webster's, Max-pressure, Self-Organizing Traffic Lights
 
+Technical details available in manuscript [An Open-Source Framework for Adaptive Traffic Signal Control](http://wadegenders.com/wp-content/uploads/2019/09/an_open-source_framework_for_adaptive_traffic_signal_control.pdf)
+
 ## Setup
 
 Install SUMO traffic microsimulator by [following instructions here](https://sumo.dlr.de/wiki/Installing) (v1.2).
