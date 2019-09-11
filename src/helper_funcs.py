@@ -17,7 +17,9 @@ def write_line_to_file(fp, write_type, line):
 
 def get_time_now():
     now = datetime.datetime.now()
-    return str(now).replace(" ","-")
+    now = str(now).replace(" ","-")
+    now = now.replace(":","-")
+    return now
 
 def write_to_log(s):
     fp = 'tmp/'
