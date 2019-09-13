@@ -268,6 +268,8 @@ def graph_individual_intersections(labels, colours, fp, metrics, save_dir):
     nrows = len(metrics)
 
     f, ax = plt.subplots(nrows=nrows,ncols=ncols)
+    if ax.ndim == 1:
+        ax = ax[...,np.newaxis]
 
     for m, r in zip(metrics, range(nrows)):
         #get metric data for each intersection
