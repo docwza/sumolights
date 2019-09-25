@@ -53,7 +53,7 @@ class DQNAgent(RLAgent):
                 ###agent has experienced across all actors
                 
         #batch forward q_s estimate
-        Q_S = self.networks.forward(np.stack(states), 'online')
+        Q_S = self.networks.forward(np.stack(states), 'target')
         #batch forward bootstrap
         R = self.next_state_bootstrap(np.stack(next_states), terminals)
 
