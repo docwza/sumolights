@@ -87,19 +87,7 @@ class DelayMetric(TrafficMetric):
         remove_vehicles = self.old_v - new_v
         delay = 0
         for v in remove_vehicles:
-            #if vehicles have experienced delay
-            #at intersection, save
-            '''
-            if self.mode == 'test':
-                v_delay = self.get_v_delay(v)    
-                if v_delay > 0:
-                    delay += v_delay
-            '''
-            
             del self.v_info[v]
-
-        #if self.mode == 'test':
-        #    self.history.append(self.get_metric())
         
         self.old_v = new_v
         self.t += 1
@@ -111,7 +99,7 @@ class QueueMetric(TrafficMetric):
         self.lane_queues = {lane:0 for lane in self.incoming_lanes}
 
     def get_metric(self):
-        return sum([self.lane_queues[lane]**2 for lane in self.lane_queues])
+        return sum([self.lane_queues[lane] for lane in self.lane_queues])
 
     def update(self, v_data):
         lane_queues = {}
