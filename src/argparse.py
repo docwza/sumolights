@@ -1,5 +1,6 @@
 import argparse, os
 
+
 def parse_cl_args():
     parser = argparse.ArgumentParser()
 
@@ -69,3 +70,11 @@ def parse_cl_args():
 
     args = parser.parse_args()
     return args
+
+
+def update_args(args, config_parser_dict):
+    args.n = int(config_parser_dict['multiprocessing']['n'])
+    args.l = int(config_parser_dict['multiprocessing']['l'])
+    # TODO: parse rest of parameters
+    return args
+

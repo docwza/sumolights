@@ -7,8 +7,8 @@ from src.simproc import SimProc
 from src.learnerproc import LearnerProc
 from src.networkdata import NetworkData
 from src.sumosim import SumoSim
-
 import numpy as np
+
 
 def get_sim(sim_str):
     if sim_str == 'lust':                                        
@@ -21,6 +21,7 @@ def get_sim(sim_str):
         cfg_fp = 'networks/double.sumocfg'                         
         net_fp = 'networks/double.net.xml'                           
     return cfg_fp, net_fp                                           
+
 
 class DistProcs:
     def __init__(self, args, tsc, mode):
