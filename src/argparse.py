@@ -75,6 +75,62 @@ def parse_cl_args():
 def update_args(args, config_parser_dict):
     args.n = int(config_parser_dict['multiprocessing']['n'])
     args.l = int(config_parser_dict['multiprocessing']['l'])
-    # TODO: parse rest of parameters
+    args.sim = config_parser_dict['sumo_param']['sim']
+    args.port = int(config_parser_dict['sumo_param']['port'])
+    args.net_fp = config_parser_dict['sumo_param']['net_fp']
+    args.sumo_cfg = config_parser_dict['sumo_param']['sumo_cfg']
+    args.mode = config_parser_dict['sumo_param']['mode']
+    args.tsc = config_parser_dict['sumo_param']['tsc']
+    args.sim_len = int(config_parser_dict['sumo_param']['sim_len'])
+    args.nogui = config_parser_dict['sumo_param']['nogui'] == 'true' or \
+                 config_parser_dict['sumo_param']['nogui'] == "True"
+    args.scale = float(config_parser_dict['sumo_param']['scale'])
+    args.demand = config_parser_dict['sumo_param']['demand']
+    args.offset = float(config_parser_dict['sumo_param']['offset'])
+    args.g_min = int(config_parser_dict['tsc_param']['g_min'])
+    args.y = int(config_parser_dict['tsc_param']['y'])
+    args.r = int(config_parser_dict['tsc_param']['r'])
+    args.c_min = int(config_parser_dict['websters_param']['c_min'])
+    args.c_max = int(config_parser_dict['websters_param']['c_max'])
+    args.sat_flow = float(config_parser_dict['websters_param']['sat_flow'])
+    args.update_freq = int(config_parser_dict['websters_param']['update_freq'])
+
+    args.theta = int(config_parser_dict['self_organizing_traffic_light_param']['theta'])
+    args.omega = int(config_parser_dict['self_organizing_traffic_light_param']['omega'])
+    args.mu = int(config_parser_dict['self_organizing_traffic_light_param']['mu'])
+
+    args.eps = float(config_parser_dict['reinforcement_learning_param']['eps'])
+    args.nsteps = int(config_parser_dict['reinforcement_learning_param']['nsteps'])
+    args.nreplay = int(config_parser_dict['reinforcement_learning_param']['nreplay'])
+    args.batch = int(config_parser_dict['reinforcement_learning_param']['batch'])
+    args.gamma = float(config_parser_dict['reinforcement_learning_param']['gamma'])
+    args.updates = int(config_parser_dict['reinforcement_learning_param']['updates'])
+    args.target_freq = int(config_parser_dict['reinforcement_learning_param']['target_freq'])
+
+    args.lr = float(config_parser_dict['neural_network_param']['lr'])
+    args.lrc = float(config_parser_dict['neural_network_param']['lrc'])
+    args.lre = float(config_parser_dict['neural_network_param']['lre'])
+    args.hidden_act = config_parser_dict['neural_network_param']['hidden_act']
+    args.n_hidden = int(config_parser_dict['neural_network_param']['n_hidden'])
+
+    args.save_path = config_parser_dict['neural_network_param']['save_path']
+    args.save_replay = config_parser_dict['neural_network_param']['save_replay']
+    args.load_replay = config_parser_dict['neural_network_param']['load_replay']
+
+    args.save_t = int(config_parser_dict['neural_network_param']['save_t'])
+    args.save = config_parser_dict['neural_network_param']['save'] == "true" or config_parser_dict['neural_network_param']['save'] == "True"
+    args.load = config_parser_dict['neural_network_param']['load'] == "true" or config_parser_dict['neural_network_param']['load'] == "True"
+    # TODO: fix the following
+    # save_path = saved_models
+    # save_replay = saved_replays
+    # load_replay = false
+    #
+    # save_t = 100
+    # save = false
+    # load = false
+    #
+    # [ddpg_rl_param]
+    # tau = 0.005
+    # g_max = 30
     return args
 
