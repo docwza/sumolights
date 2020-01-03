@@ -3,6 +3,7 @@ from itertools import cycle
 from collections import deque
 
 from src.trafficsignalcontroller import TrafficSignalController
+from src.helper_funcs import write_to_log
 
 
 class MaxPressureTSC(TrafficSignalController):
@@ -11,10 +12,8 @@ class MaxPressureTSC(TrafficSignalController):
         self.green_t = green_t
         self.t = 0
         # for keeping track of vehicle counts for websters calc
-        print(tsc_id)
         self.phase_deque = deque()
         self.max_pressure_lanes = self.max_pressure_lanes()
-        print("max lane:\t", self.max_pressure_lanes)
         self.data = None
         # store how many green movements each phase has
         # for breaking ties in max pressure
@@ -97,4 +96,4 @@ class MaxPressureTSC(TrafficSignalController):
             return self.red_t
 
     def update(self, data):
-        self.data = data 
+        self.data = data

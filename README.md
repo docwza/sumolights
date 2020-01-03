@@ -1,3 +1,29 @@
+
+
+# Simulation
+
+## The data we get for each traffic light 
+
+```python
+self.conn.junction.subscribeContext(tsc_id, traci.constants.CMD_GET_VEHICLE_VARIABLE, 150,
+                                        [traci.constants.VAR_LANEPOSITION,
+                                        traci.constants.VAR_SPEED,
+                                        traci.constants.VAR_LANE_ID])
+```
+
+Because of the `subscribeContext`, we could identify the vehicle info within 150m. The vehicle info includes its lanepositions, speed and land id. If you print it out, it shows as 
+```json
+{'gneE11311': // vehicle id
+  {86: 85.5756588880405,  // lane position
+   64: 6.263429403624231, // vehicle speed
+   81: '-gneE10_0'}       // lane id
+}
+```
+
+To get more info, you want to check out the traci constants [LINK](https://sumo.dlr.de/pydoc/traci.constants.html).
+
+
+
 # sumolights
 SUMO adaptive traffic signal control - DQN, DDPG, Webster's, Max-pressure, Self-Organizing Traffic Lights
 
@@ -28,8 +54,6 @@ Visualize results with:
 ```
 python graph_results.py
 ```
-![Screenshot](samples/travel_time.png)
-![Screenshot](samples/intersection_moe.png)
 
 ## Optimizing hyperparameters
 Search for optimal hyperparameters for each controller:
@@ -42,5 +66,4 @@ Visualize hyperparameters with:
 ```
 python graph_results.py -type hp
 ```
-![Screenshot](samples/tsc_hp.png)
-![Screenshot](samples/hp.png)
+

@@ -156,7 +156,6 @@ class SumoSim:
             self.update_travel_times()
             # run all traffic signal controllers in network
             for t in self.tsc:
-                print(type(self.tsc[t]))
                 self.tsc[t].run()
             self.sim_step()
 
