@@ -2,8 +2,8 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.initializers import he_uniform
-
+# from tensorflow.initializers import he_uniform
+from tensorflow.compat.v1.initializers import he_uniform
 from src.neuralnet import NeuralNet
 from src.neuralnets.varstate import VariableState
 from src.picklefuncs import save_data, load_data
