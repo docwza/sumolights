@@ -58,9 +58,9 @@ class SimProc(Process):
         if self.args.mode == 'train':
             while not self.finished_updates():
                 self.run_sim(neural_networks)
-                if (self.eps == 1.0 or self.eps < 0.02):
+                if self.eps == 1.0 or self.eps < 0.02:
                     self.write_to_csv(self.sim.sim_stats())
-                #self.write_travel_times()
+                # self.write_travel_times()
                 self.sim.close()
 
         elif self.args.mode == 'test':
@@ -71,7 +71,7 @@ class SimProc(Process):
             self.run_sim(neural_networks)
             if (self.eps == 1.0 or self.eps < 0.02) and self.args.mode == 'test':
                 self.write_to_csv(self.sim.sim_stats())
-                with open( str(self.eps)+'.csv','a+') as f:
+                with open( str(self.eps)+'.csv', 'a+') as f:
                     f.write('-----------------\n')
             self.write_sim_tsc_metrics()
             # self.write_travel_times()

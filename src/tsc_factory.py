@@ -6,6 +6,7 @@ from src.trafficsignalcontrollers.nextphaserltsc import NextPhaseRLTSC
 from src.trafficsignalcontrollers.nextdurationrltsc import NextDurationRLTSC
 from src.rl_factory import rl_factory
 
+
 def tsc_factory(tsc_type, tl, args, netdata, rl_stats, exp_replay, neural_network, eps, conn):
     if tsc_type == 'websters':
         return WebstersTSC(conn, tl, args.mode, netdata, args.r, args.y,

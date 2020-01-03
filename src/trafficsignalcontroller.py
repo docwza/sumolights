@@ -72,7 +72,7 @@ class TrafficSignalController:
         if self.phase_time == 0:
             # get new phase and duration
             next_phase = self.next_phase()
-            self.conn.trafficlight.setRedYellowGreenState( self.id, next_phase )
+            self.conn.trafficlight.setRedYellowGreenState(self.id, next_phase)
             self.phase = next_phase
             self.phase_time = self.next_phase_duration()
         self.phase_time -= 1
@@ -97,10 +97,10 @@ class TrafficSignalController:
         raise NotImplementedError("Subclasses should implement this!")
 
     def get_subscription_data(self):
-        #use SUMO subscription to retrieve vehicle info in batches
-        #around the traffic signal controller
+        # use SUMO subscription to retrieve vehicle info in batches
+        # around the traffic signal controller
         tl_data = self.conn.junction.getContextSubscriptionResults(self.id)                          
-        #create empty incoming lanes for use else where
+        # create empty incoming lanes for use else where
         lane_vehicles = {l:{} for l in self.incoming_lanes}
         if tl_data is not None:
             for v in tl_data:

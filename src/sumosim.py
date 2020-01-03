@@ -74,11 +74,11 @@ class SumoSim:
         return traci.connect(port), sumo_process
 
     def get_traffic_lights(self):
-        #find all the junctions with traffic lights
-        trafficlights = self.conn.trafficlight.getIDList()
+        # find all the junctions with traffic lights
+        traffic_lights = self.conn.trafficlight.getIDList()
         junctions = self.conn.junction.getIDList()
 
-        tl_juncs = set(trafficlights).intersection( set(junctions) )
+        tl_juncs = set(traffic_lights).intersection(set(junctions))
         tls = []
      
         # only keep traffic lights with more than 1 green phase
@@ -108,15 +108,16 @@ class SumoSim:
             for r in lust_remove:
                 if r in tls:
                     tls.remove(r)
+        print("tls:\t", tls)
         return set(tls)
 
-    def create_tsc(self, rl_stats, exp_replays, eps, neural_networks = None):
-        self.tl_junc = self.get_traffic_lights() 
+    def create_tsc(self, rl_stats, exp_replays, eps, neural_networks=None):
+        self.tl_junc = self.get_traffic_lights()
         if not neural_networks:
-            neural_networks = {tl:None for tl in self.tl_junc}
+            neural_networks = {tl: None for tl in self.tl_junc}
         # create traffic signal controllers for the junctions with lights
-        self.tsc = { tl:tsc_factory(self.args.tsc, tl, self.args, self.netdata, rl_stats[tl], exp_replays[tl], neural_networks[tl], eps, self.conn)  
-                     for tl in self.tl_junc }
+        self.tsc = {tl: tsc_factory(self.args.tsc, tl, self.args, self.netdata, rl_stats[tl], exp_replays[tl], neural_networks[tl], eps, self.conn)
+                     for tl in self.tl_junc}
 
     def update_netdata(self):
         tl_junc = self.get_traffic_lights()
@@ -155,6 +156,7 @@ class SumoSim:
             self.update_travel_times()
             # run all traffic signal controllers in network
             for t in self.tsc:
+                print(type(self.tsc[t]))
                 self.tsc[t].run()
             self.sim_step()
 
@@ -194,6 +196,5 @@ class SumoSim:
         return tsc_metrics
 
     def close(self):
-        #self.conn.close()
         self.conn.close()
         self.sumo_process.terminate()

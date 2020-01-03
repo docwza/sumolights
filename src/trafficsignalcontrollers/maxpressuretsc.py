@@ -43,7 +43,7 @@ class MaxPressureTSC(TrafficSignalController):
                 for ol in self.netdata['lane'][l]['outgoing']:
                     out_lanes.add(ol)
 
-            max_pressure_lanes[g] = {'inc':inc_lanes, 'out':out_lanes}
+            max_pressure_lanes[g] = {'inc': inc_lanes, 'out': out_lanes}
         return max_pressure_lanes
 
     def max_pressure(self):
@@ -54,8 +54,8 @@ class MaxPressureTSC(TrafficSignalController):
             inc_lanes = self.max_pressure_lanes[g]['inc']
             out_lanes = self.max_pressure_lanes[g]['out']
             # pressure is defined as the number of vehicles in a lane
-            inc_pressure = sum([ len(self.data[l]) if l in self.data else 0 for l in inc_lanes])
-            out_pressure = sum([ len(self.data[l]) if l in self.data else 0 for l in out_lanes])
+            inc_pressure = sum([len(self.data[l]) if l in self.data else 0 for l in inc_lanes])
+            out_pressure = sum([len(self.data[l]) if l in self.data else 0 for l in out_lanes])
             phase_pressure[g] = inc_pressure - out_pressure
             if inc_pressure == 0 and out_pressure == 0:
                 no_vehicle_phases.append(g)
@@ -68,9 +68,9 @@ class MaxPressureTSC(TrafficSignalController):
             # if two phases have equivalent pressure
             # select one with more green movements
             # return max(phase_pressure, key=lambda p:phase_pressure[p])
-            phase_pressure = [ (p, phase_pressure[p]) for p in phase_pressure]
-            phase_pressure = sorted(phase_pressure, key=lambda p:p[1], reverse=True)
-            phase_pressure = [ p for p in phase_pressure if p[1] == phase_pressure[0][1] ]
+            phase_pressure = [(p, phase_pressure[p]) for p in phase_pressure]
+            phase_pressure = sorted(phase_pressure, key=lambda p: p[1], reverse=True)
+            phase_pressure = [p for p in phase_pressure if p[1] == phase_pressure[0][1] ]
             return random.choice(phase_pressure)[0]
 
             '''
