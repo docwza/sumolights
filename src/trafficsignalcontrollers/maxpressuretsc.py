@@ -47,6 +47,7 @@ class MaxPressureTSC(TrafficSignalController):
         return max_pressure_lanes
 
     def max_pressure(self):
+        print(self.data)
         phase_pressure = {}
         no_vehicle_phases = []
         # compute pressure for all green movements

@@ -36,7 +36,8 @@ class TrafficSignalController:
         self.conn.junction.subscribeContext(tsc_id, traci.constants.CMD_GET_VEHICLE_VARIABLE, 150,
                                             [traci.constants.VAR_LANEPOSITION,
                                              traci.constants.VAR_SPEED,
-                                             traci.constants.VAR_LANE_ID])
+                                             traci.constants.VAR_LANE_ID,
+                                             traci.constants.VAR_WAITING_TIME])
         # get all incoming lanes to intersection
         self.incoming_lanes = set()
         for p in self.phase_lanes:

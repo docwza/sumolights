@@ -13,10 +13,13 @@ self.conn.junction.subscribeContext(tsc_id, traci.constants.CMD_GET_VEHICLE_VARI
 
 Because of the `subscribeContext`, we could identify the vehicle info within 150m. The vehicle info includes its lanepositions, speed and land id. If you print it out, it shows as 
 ```python
-{'gneE11311': // vehicle id
-  {86: 85.5756588880405,  // lane position
-   64: 6.263429403624231, // vehicle speed
-   81: '-gneE10_0'}       // lane id
+{
+'gneE11311': # vehicle id
+  {
+    86: 85.5756588880405,  # lane position
+    64: 6.263429403624231, # vehicle speed
+    81: '-gneE10_0'       # lane id
+  }
 }
 ```
 
