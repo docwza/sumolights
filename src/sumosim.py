@@ -15,6 +15,7 @@ from src.tsc_factory import tsc_factory
 from src.vehiclegen import VehicleGen
 from src.helper_funcs import write_to_log
 
+
 class SumoSim:
     def __init__(self, cfg_fp, sim_len, tsc, nogui, netdata, args, idx):
         self.cfg_fp = cfg_fp
@@ -26,9 +27,9 @@ class SumoSim:
         self.idx = idx
 
     def gen_sim(self):
-        #create sim stuff and intersections
-        #serverless_connect()
-        #self.conn, self.sumo_process = self.server_connect()
+        # create sim stuff and intersections
+        # serverless_connect()
+        # self.conn, self.sumo_process = self.server_connect()
 
         port = self.args.port+self.idx
         sumoBinary = checkBinary(self.sumo_cmd)
@@ -45,6 +46,8 @@ class SumoSim:
         self.v_start_times = {}
         self.v_travel_times = {}
         self.vehiclegen = None
+
+        # the generation (`VehicleGen`) of virtual vehicles is only valid in single and double modes
         if self.args.sim == 'double' or self.args.sim == 'single':
             self.vehiclegen = VehicleGen(self.netdata, 
                                          self.args.sim_len, 
@@ -78,41 +81,40 @@ class SumoSim:
         tl_juncs = set(trafficlights).intersection( set(junctions) )
         tls = []
      
-        #only keep traffic lights with more than 1 green phase
+        # only keep traffic lights with more than 1 green phase
         for tl in tl_juncs:
-            #subscription to get traffic light phases
+            # subscription to get traffic light phases
             self.conn.trafficlight.subscribe(tl, [traci.constants.TL_COMPLETE_DEFINITION_RYG])
             tldata = self.conn.trafficlight.getAllSubscriptionResults()
             logic = tldata[tl][traci.constants.TL_COMPLETE_DEFINITION_RYG][0]
 
-            #for some reason this throws errors for me in SUMO 1.2
-            #have to do subscription based above
+            # for some reason this throws errors for me in SUMO 1.2
+            # have to do subscription based above
             '''
             logic = self.conn.trafficlight.getCompleteRedYellowGreenDefinition(tl)[0] 
             '''
-            #get only the green phases
-            green_phases = [ p.state for p in logic.getPhases()
+            # get only the green phases
+            green_phases = [p.state for p in logic.getPhases()
                              if 'y' not in p.state
                              and ('G' in p.state or 'g' in p.state) ]
             if len(green_phases) > 1:
                 tls.append(tl)
 
-        #for some reason these intersections cause problems with tensorflow
-        #I have no idea why, it doesn't make any sense, if you don't believe me 
-        #then comment this and try it, if you an fix it you are the real MVP
+        # for some reason these intersections cause problems with tensorflow
+        # I have no idea why, it doesn't make any sense, if you don't believe me
+        # then comment this and try it, if you an fix it you are the real MVP
         if self.args.sim == 'lust':
             lust_remove = ['-12', '-78', '-2060']
             for r in lust_remove:
                 if r in tls:
                     tls.remove(r)
-        return set(tls) 
-
+        return set(tls)
 
     def create_tsc(self, rl_stats, exp_replays, eps, neural_networks = None):
         self.tl_junc = self.get_traffic_lights() 
         if not neural_networks:
             neural_networks = {tl:None for tl in self.tl_junc}
-        #create traffic signal controllers for the junctions with lights
+        # create traffic signal controllers for the junctions with lights
         self.tsc = { tl:tsc_factory(self.args.tsc, tl, self.args, self.netdata, rl_stats[tl], exp_replays[tl], neural_networks[tl], eps, self.conn)  
                      for tl in self.tl_junc }
 
@@ -145,13 +147,13 @@ class SumoSim:
             self.sim_step()
 
     def run(self):
-        #execute simulation for desired length
+        # execute simulation for desired length
         while self.t < self.sim_len:
-            #create vehicles if vehiclegen class exists
+            # create vehicles if vehiclegen class exists
             if self.vehiclegen:
                 self.vehiclegen.run()
             self.update_travel_times()
-            #run all traffic signal controllers in network
+            # run all traffic signal controllers in network
             for t in self.tsc:
                 self.tsc[t].run()
             self.sim_step()

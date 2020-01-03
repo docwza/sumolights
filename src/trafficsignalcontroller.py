@@ -1,7 +1,5 @@
 import os, sys, copy
-
 import numpy as np
-
 from collections import deque
 
 if 'SUMO_HOME' in os.environ:
@@ -14,6 +12,7 @@ else:
 import traci
 
 from src.trafficmetrics import TrafficMetrics
+
 
 class TrafficSignalController:
     """Abstract base class for all traffic signal controller.
@@ -31,23 +30,23 @@ class TrafficSignalController:
         self.all_red = len((self.green_phases[0]))*'r'
         self.phase = self.all_red
         self.phase_lanes = self.phase_lanes(self.green_phases)
-        #create subscription for this traffic signal junction to gather
-        #vehicle information efficiently
+        # create subscription for this traffic signal junction to gather
+        # vehicle information efficiently
         self.conn.junction.subscribeContext(tsc_id, traci.constants.CMD_GET_VEHICLE_VARIABLE, 150, 
                                         [traci.constants.VAR_LANEPOSITION, 
                                         traci.constants.VAR_SPEED, 
                                         traci.constants.VAR_LANE_ID])
-        #get all incoming lanes to intersection
+        # get all incoming lanes to intersection
         self.incoming_lanes = set()
         for p in self.phase_lanes:
             for l in self.phase_lanes[p]:
                 self.incoming_lanes.add(l)
 
         self.incoming_lanes = sorted(list(self.incoming_lanes))
-        #lane capacity is the lane length divided by the average vehicle length+stopped headway
+        # lane capacity is the lane length divided by the average vehicle length+stopped headway
         self.lane_capacity = np.array([float(self.netdata['lane'][lane]['length'])/7.5 for lane in self.incoming_lanes])
-        #for collecting various traffic metrics at the intersection
-        #can be extended in trafficmetric.py class to collect new metrics
+        # for collecting various traffic metrics at the intersection
+        # can be extended in trafficmetric.py class to collect new metrics
         if mode == 'train':
             self.metric_args = ['delay']
         if mode == 'test':
@@ -71,7 +70,7 @@ class TrafficSignalController:
 
     def increment_controller(self):
         if self.phase_time == 0:
-            ###get new phase and duration
+            # get new phase and duration
             next_phase = self.next_phase()
             self.conn.trafficlight.setRedYellowGreenState( self.id, next_phase )
             self.phase = next_phase
@@ -113,12 +112,11 @@ class TrafficSignalController:
 
     def get_tl_green_phases(self):
         logic = self.conn.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0]
-        #get only the green phases
+        # get only the green phases
         green_phases = [ p.state for p in logic.getPhases() 
                          if 'y' not in p.state 
                          and ('G' in p.state or 'g' in p.state) ]
-
-        #sort to ensure parity between sims (for RL actions)
+        # sort to ensure parity between sims (for RL actions)
         return sorted(green_phases)
     
     def phase_lanes(self, actions):
@@ -132,7 +130,7 @@ class TrafficSignalController:
                 elif a[s] == 'r':
                     red_lanes.add(self.netdata['inter'][self.id]['tlsindex'][s])
 
-            ###some movements are on the same lane, removes duplicate lanes
+            # some movements are on the same lane, removes duplicate lanes
             pure_green = [l for l in green_lanes if l not in red_lanes]
             if len(pure_green) == 0:
                 phase_lanes[a] = list(set(green_lanes))
@@ -140,7 +138,7 @@ class TrafficSignalController:
                 phase_lanes[a] = list(set(pure_green))
         return phase_lanes
 
-    #helper functions for rl controllers
+    # helper functions for rl controllers
     def input_to_one_hot(self, phases):
         identity = np.identity(len(phases))                                 
         one_hots = { phases[i]:identity[i,:]  for i in range(len(phases)) }
@@ -150,11 +148,11 @@ class TrafficSignalController:
         return { p:phases[p] for p in range(len(phases)) }
 
     def get_state(self):
-        #the state is the normalized density of all incoming lanes 
+        # the state is the normalized density of all incoming lanes
         return np.concatenate([self.get_normalized_density(), self.get_normalized_queue()])
 
     def get_normalized_density(self):
-        #number of vehicles in each incoming lane divided by the lane's capacity
+        # number of vehicles in each incoming lane divided by the lane's capacity
         return np.array([len(self.data[lane]) for lane in self.incoming_lanes])/self.lane_capacity
 
     def get_normalized_queue(self):
@@ -174,7 +172,7 @@ class TrafficSignalController:
         return True
 
     def get_reward(self):
-        #return negative delay as reward
+        # return negative delay as reward
         delay = int(self.trafficmetrics.get_metric('delay'))
         if delay == 0:
             r = 0
@@ -195,7 +193,6 @@ class TrafficSignalController:
                 copy_dtse[lane_to_int[lane],:] = 1.0
             phase_dtse[phase] = copy_dtse
         return phase_dtse
-
 
     def get_dtse():
         dtse = np.copy(self._dtse)

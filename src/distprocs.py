@@ -86,7 +86,7 @@ class DistProcs:
         print(offsets)
 
         # create sumo sim procs to generate experiences
-        sim_procs = [ SimProc(i, args, barrier, netdata, rl_stats, exp_replays, eps_rates[i], offsets[i]) for i in range(args.n)]
+        sim_procs = [SimProc(i, args, barrier, netdata, rl_stats, exp_replays, eps_rates[i], offsets[i]) for i in range(args.n)]
 
         # create learner procs which are assigned tsc/rl agents
         # to compute neural net updates for
@@ -102,6 +102,7 @@ class DistProcs:
         # learner_procs = []
 
         self.procs = sim_procs + learner_procs
+        print("self procs:\t", self.procs)
 
     def run(self):
         print('Starting up all processes...')

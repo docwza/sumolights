@@ -11,6 +11,7 @@ import traci
 
 import numpy as np
 
+
 class VehicleGen:
     def __init__(self, netdata, sim_len, demand, scale, mode, conn):
         np.random.seed()

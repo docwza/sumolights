@@ -15,6 +15,7 @@ from src.nn_factory import gen_neural_networks
 from src.picklefuncs import save_data
 from src.helper_funcs import check_and_make_dir, get_time_now, write_to_log
 
+
 class SimProc(Process):
     def __init__(self, idx, args, barrier, netdata, rl_stats, exp_replays, eps, offset):
         Process.__init__(self)
@@ -50,9 +51,9 @@ class SimProc(Process):
         write_to_log(' ACTOR #'+str(self.idx)+'  BROKEN SYNC BARRIER...')
         if self.args.l > 0 and self.args.mode == 'train':
             neural_networks = self.sync_nn_weights(neural_networks)
-        #barrier
-        #grab weights from learner or load from file
-        #barrier
+        # barrier
+        # grab weights from learner or load from file
+        # barrier
 
         if self.args.mode == 'train':
             while not self.finished_updates():
@@ -66,14 +67,14 @@ class SimProc(Process):
             print(str(self.idx)+' test  waiting at offset ------------- '+str(self.offset))
             print(str(self.idx)+' test broken offset =================== '+str(self.offset))
             self.initial = False
-            #just run one sim for stats
+            # just run one sim for stats
             self.run_sim(neural_networks)
             if (self.eps == 1.0 or self.eps < 0.02) and self.args.mode == 'test':
                 self.write_to_csv(self.sim.sim_stats())
                 with open( str(self.eps)+'.csv','a+') as f:
                     f.write('-----------------\n')
             self.write_sim_tsc_metrics()
-            #self.write_travel_times()
+            # self.write_travel_times()
             self.sim.close()
         print('------------------\nFinished on sim process '+str(self.idx)+' Closing\n---------------')
 
@@ -82,7 +83,7 @@ class SimProc(Process):
         self.sim.gen_sim()
 
         if self.initial is True:
-            #if the initial sim, run until the offset time reached
+            # if the initial sim, run until the offset time reached
             self.initial = False
             self.sim.run_offset(self.offset)
             print(str(self.idx)+' train  waiting at offset ------------- '+str(self.offset)+' at '+str(get_time_now()))
@@ -98,15 +99,15 @@ class SimProc(Process):
         write_to_log('ACTOR #'+str(self.idx)+'  FINISHED SIM...')
 
     def write_sim_tsc_metrics(self):
-        #get data dict of all tsc in sim
-        #where each tsc has dict of all metrics
+        # get data dict of all tsc in sim
+        # where each tsc has dict of all metrics
         tsc_metrics =  self.sim.get_tsc_metrics()
-        #create file name and path for writing metrics data
-        #now = datetime.datetime.now()
-        #fname = str(self.idx)+'_'+str(now).replace(" ","-")
+        # create file name and path for writing metrics data
+        # now = datetime.datetime.now()
+        # fname = str(self.idx)+'_'+str(now).replace(" ","-")
         fname = get_time_now()
-        #write all metrics to correct path
-        #path = 'metrics/'+str(self.args.tsc)
+        # write all metrics to correct path
+        # path = 'metrics/'+str(self.args.tsc)
         path = 'metrics/'+str(self.args.tsc) 
         for tsc in tsc_metrics:
             for m in tsc_metrics[tsc]:
@@ -128,7 +129,6 @@ class SimProc(Process):
         check_and_make_dir(path)
         save_data( path+(self.self.eps)'_'+fname+'.p', self.sim.get_tsc_returns())
     '''
-
 
     def write_to_csv(self, data):
         with open( str(self.eps)+'.csv','a+') as f:
@@ -156,12 +156,12 @@ class SimProc(Process):
         for nn in neural_networks:
             weights = self.rl_stats[nn]['online']
             if self.args.tsc == 'ddpg':
-                #sync actor weights
+                # sync actor weights
                 neural_networks[nn]['actor'].set_weights(weights, 'online')
             elif self.args.tsc == 'dqn':
                 neural_networks[nn].set_weights(weights, 'online')
             else:
-                #raise not found exceptions
+                # raise not found exceptions
                 assert 0, 'Supplied RL traffic signal controller '+str(self.args.tsc)+' does not exist.'
         return neural_networks
     '''

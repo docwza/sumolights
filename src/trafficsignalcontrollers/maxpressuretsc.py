@@ -11,7 +11,7 @@ class MaxPressureTSC(TrafficSignalController):
         self.green_t = green_t
         self.t = 0
         # for keeping track of vehicle counts for websters calc
-        # print(tsc_id)
+        print(tsc_id)
         self.phase_deque = deque()
         self.max_pressure_lanes = self.max_pressure_lanes()
         self.data = None
