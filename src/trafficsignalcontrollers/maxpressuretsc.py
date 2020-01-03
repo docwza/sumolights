@@ -14,6 +14,7 @@ class MaxPressureTSC(TrafficSignalController):
         print(tsc_id)
         self.phase_deque = deque()
         self.max_pressure_lanes = self.max_pressure_lanes()
+        print("max lane:\t", self.max_pressure_lanes)
         self.data = None
         # store how many green movements each phase has
         # for breaking ties in max pressure
