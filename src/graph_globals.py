@@ -2,13 +2,13 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-###https://stackoverflow.com/questions/3899980/how-to-change-the-font-size-on-a-matplotlib-plot
+# https://stackoverflow.com/questions/3899980/how-to-change-the-font-size-on-a-matplotlib-plot
 
 def global_params():
-    #for line graphs
+    # for line graphs
     scale = 10.0
-    ###for pie graphs
-    #scale = 5.0
+    # for pie graphs
+    # scale = 5.0
 
     big = 5*scale
     med = 3.5*scale

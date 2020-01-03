@@ -11,6 +11,7 @@ from src.rl_factory import rl_factory
 from src.helper_funcs import write_line_to_file, check_and_make_dir, get_time_now, write_to_log
 from src.picklefuncs import save_data, load_data
 
+
 class LearnerProc(Process):
     def __init__(self, idx, args, barrier, netdata, agent_ids, rl_stats, exp_replay):
         Process.__init__(self)
@@ -23,7 +24,7 @@ class LearnerProc(Process):
         self.exp_replay = exp_replay
         self.save_t = 0
         self.replay_fp =  self.args.save_replay+'/'+self.args.tsc+'/'
-        #for saving agent progress
+        # for saving agent progress
         if self.idx == 0:
             path = 'tmp/'                                                                    
             check_and_make_dir(path)
@@ -32,13 +33,13 @@ class LearnerProc(Process):
             self.replay_path = path + str(self.args.tsc)+'_'+str(now)+'_agent_replay.csv' 
             self.n_exp_path = path + str(self.args.tsc)+'_'+str(now)+'_agent_nexp.csv' 
             self.tsc_ids = list(sorted(list(self.netdata['inter'].keys())))
-            #write header line with tsc names
+            # write header line with tsc names
             write_line_to_file( self.updates_path, 'a+', ','.join([now]+self.tsc_ids) )
             write_line_to_file( self.replay_path, 'a+', ','.join([now]+self.tsc_ids) )
             write_line_to_file( self.n_exp_path, 'a+', ','.join([now]+self.tsc_ids) )
 
     def run(self):
-        #gen neural networks
+        # gen neural networks
         learner = True
         
         neural_networks = gen_neural_networks(self.args, 
@@ -53,7 +54,7 @@ class LearnerProc(Process):
         write_to_log(' LEARNER #'+str(self.idx)+' SENDING WEIGHTS...')
 
         neural_networks = self.distribute_weights(neural_networks) 
-        #wait for all procs to sync weights
+        # wait for all procs to sync weights
         print('learner waiting at barrier ------------')
         write_to_log(' LEARNER #'+str(self.idx)+' FINISHED SENDING WEIGHTS, WAITING AT BARRIER...')
         self.barrier.wait()
@@ -62,7 +63,7 @@ class LearnerProc(Process):
         if self.args.load_replay:
             self.load_replays()
 
-        #create agents
+        # create agents
         agents = self.gen_agents(neural_networks)
 
         print('learner proc '+str(self.idx)+' waiting at offset barrier------------')
@@ -73,19 +74,19 @@ class LearnerProc(Process):
 
         self.save_t = time.time()
         othert = time.time()
-        #keep looping until all agents have
-        #achieved sufficient batch updates
+        # keep looping until all agents have
+        # achieved sufficient batch updates
         while not self.finished_learning(self.agent_ids):
             for tsc in self.agent_ids:
-                #wait until exp replay buffer full
+                # wait until exp replay buffer full
                 if len(self.exp_replay[tsc]) >= self.args.nreplay:
-                    #reset the number of experiences once when the 
-                    #exp replay is filled for the first time
+                    # reset the number of experiences once when the
+                    # exp replay is filled for the first time
                     if self.rl_stats[tsc]['updates'] == 0:
                         if self.args.save:
                             self.save_replays()
                         print(tsc+' exp replay full, beginning batch updates********')
-                        #write_to_log(' LEARNER #'+str(self.idx)+' START LEARNING '+str(tsc))
+                        # write_to_log(' LEARNER #'+str(self.idx)+' START LEARNING '+str(tsc))
                         self.rl_stats[tsc]['n_exp'] = len(self.exp_replay[tsc])
                     if self.rl_stats[tsc]['updates'] < self.args.updates and self.rl_stats[tsc]['n_exp'] > 0: 
                         for i in range(min(self.rl_stats[tsc]['n_exp'], 4)):
@@ -100,25 +101,23 @@ class LearnerProc(Process):
                 nexp = [str(self.rl_stats[i]['n_exp']) for i in self.agent_ids]
                 write_to_log(' LEARNER #'+str(self.idx)+'\n'+str(self.agent_ids)+'\n'+str(nexp)+'\n'+str(n_replay)+'\n'+str(updates))                           
 
-
-            #save weights periodically
+            # save weights periodically
             if self.args.save:
                 if self.time_to_save():
                     self.save_weights(neural_networks)
 
-                    #write agent training progress
-                    #only on one learner
+                    # write agent training progress
+                    # only on one learner
                     if self.idx == 0:
                         self.write_progress()
         write_to_log(' LEARNER #'+str(self.idx)+' FINISHED TRAINING LOOP ===========')
 
         if self.idx == 0:
-            #if other agents arent finished learning
-            #keep updating progress
+            # if other agents arent finished learning
+            # keep updating progress
             while not self.finished_learning(self.tsc_ids):
                 if self.time_to_save():
                     self.write_progress()
-
 
         if self.args.save:
             self.save_weights(neural_networks)
@@ -162,20 +161,20 @@ class LearnerProc(Process):
     def distribute_weights(self, neural_networks):
         for nn in neural_networks:
             if self.args.tsc == 'ddpg':
-                #sync actor weights
+                # sync actor weights
                 weights = neural_networks[nn]['actor'].get_weights('online')
                 critic_weights = neural_networks[nn]['critic'].get_weights('online')
-                #synchronize target/online weights
+                # synchronize target/online weights
                 neural_networks[nn]['actor'].set_weights(weights, 'target')
                 neural_networks[nn]['critic'].set_weights(critic_weights, 'target')
             elif self.args.tsc == 'dqn':
                 weights = neural_networks[nn].get_weights('online')
-                #synchronize target/online weights
+                # synchronize target/online weights
                 neural_networks[nn].set_weights(weights, 'target')
             else:
-                #raise not found exceptions
+                # raise not found exceptions
                 assert 0, 'Supplied RL traffic signal controller '+str(self.args.tsc)+' does not exist.'
-            #send weights to sim processes
+            # send weights to sim processes
             self.rl_stats[nn]['online'] = weights
         return neural_networks
 
@@ -222,7 +221,7 @@ class LearnerProc(Process):
                     for exp in traj:
                         rewards.append(abs(exp['r']))
                     self.exp_replay[_id].append(traj) 
-                #find largest reward to reward normalization
+                # find largest reward to reward normalization
                 print('mean '+str(np.mean(rewards))+' std '+str(np.std(rewards))+' median '+str(np.median(rewards)))
                 self.rl_stats[_id]['r_max'] = max(rewards)
                 print(str(self.idx)+' LARGEST REWARD '+str(self.rl_stats[_id]['r_max']))

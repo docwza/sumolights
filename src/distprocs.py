@@ -29,32 +29,32 @@ class DistProcs:
         rl_tsc = ['ddpg', 'dqn']
         traditional_tsc = ['websters', 'maxpressure', 'sotl', 'uniform']
 
-        #depending on tsc alg, different hyper param checks
+        # depending on tsc alg, different hyper param checks
         if tsc in rl_tsc:
-            #disable_eager_execution()
-            #need actors and at least one learner
+            # disable_eager_execution()
+            # need actors and at least one learner
             if mode == 'train':
-                #ensure we have at least one learner
+                # ensure we have at least one learner
                 if args.l < 1:
                     args.l = 1
             elif mode == 'test':
-                #no learners necessary for testing
+                # no learners necessary for testing
                 if args.l > 0:
                     args.l = 0
         elif tsc in traditional_tsc:
-            #traditional tsc doesn't require learners
+            # traditional tsc doesn't require learners
             if args.l > 0:
                 args.l = 0
         else:
             print('Input argument tsc '+str(tsc)+' not found, please provide valid tsc.')
             return
 
-        #ensure at least one sim, otherwise no point in running program
+        # ensure at least one sim, otherwise no point in running program
         if args.n < 0:
             args.n = 1
 
-        #if sim arg provided, use to get cfg and netfp
-        #otherwise, continue with args default
+        # if sim arg provided, use to get cfg and netfp
+        # otherwise, continue with args default
         if args.sim:
             args.cfg_fp, args.net_fp = get_sim(args.sim)
 
@@ -65,18 +65,18 @@ class DistProcs:
         nd = NetworkData(args.net_fp)
         netdata = nd.get_net_data()
 
-        #create a dummy sim to get tsc data for creating nn
-        #print('creating dummy sim for netdata...')
+        # create a dummy sim to get tsc data for creating nn
+        # print('creating dummy sim for netdata...')
         sim = SumoSim(args.cfg_fp, args.sim_len, args.tsc, True, netdata, args, -1)
         sim.gen_sim()
         netdata = sim.update_netdata()
         sim.close()
-        #print('...finished with dummy sim')
+        # print('...finished with dummy sim')
 
         tsc_ids = netdata['inter'].keys()
 
-        #create mp dict for sharing 
-        #reinforcement learning stats
+        # create mp dict for sharing
+        # reinforcement learning stats
         rl_stats = self.create_mp_stats_dict(tsc_ids)
         exp_replays = self.create_mp_exp_replay(tsc_ids)
 
@@ -85,11 +85,11 @@ class DistProcs:
         offsets = self.get_start_offsets(args.mode, args.sim_len, args.offset, args.n)
         print(offsets)
 
-        #create sumo sim procs to generate experiences
+        # create sumo sim procs to generate experiences
         sim_procs = [ SimProc(i, args, barrier, netdata, rl_stats, exp_replays, eps_rates[i], offsets[i]) for i in range(args.n)]
 
-        #create learner procs which are assigned tsc/rl agents
-        #to compute neural net updates for
+        # create learner procs which are assigned tsc/rl agents
+        # to compute neural net updates for
         if args.l > 0:
             learner_agents = self.assign_learner_agents( tsc_ids, args.l)
             print('===========LEARNER AGENTS')
@@ -99,25 +99,24 @@ class DistProcs:
         else:
             learner_procs = []
 
-        #learner_procs = []
+        # learner_procs = []
 
         self.procs = sim_procs + learner_procs
 
-
     def run(self):
         print('Starting up all processes...')
-        ###start everything   
+        # start everything
         for p in self.procs:
             p.start()
                               
-        ###join when finished
+        # join when finished
         for p in self.procs:
             p.join()
 
         print('...finishing all processes')
 
     def create_mp_stats_dict(self, tsc_ids):
-        ###use this mp shared dict for data between procs
+        # use this mp shared dict for data between procs
         manager = Manager()
         rl_stats = manager.dict({})
         for i in tsc_ids:
@@ -136,8 +135,8 @@ class DistProcs:
         return rl_stats
 
     def create_mp_exp_replay(self, tsc_ids):
-        ###create shared memory for experience replay 
-        #(governs agents appending and learners accessing and deleting)
+        # create shared memory for experience replay
+        # (governs agents appending and learners accessing and deleting)
         manager = Manager()
         return manager.dict({ tsc: manager.list() for tsc in tsc_ids })
 
@@ -145,7 +144,7 @@ class DistProcs:
         learner_agents = [ [] for _ in range(n_learners)]
         for agent, i in zip(agents, range(len(agents))):
             learner_agents[i%n_learners].append(agent)
-        ##list of lists, each sublit is the agents a learner is responsible for
+        # list of lists, each sublit is the agents a learner is responsible for
         return learner_agents
 
     def get_exploration_rates(self, eps, n_actors, mode, net):
@@ -153,7 +152,7 @@ class DistProcs:
             return [eps for _ in range(n_actors)]
         elif mode == 'train':
             if net == 'lust':
-                #for lust we restrict the exploration rates
+                # for lust we restrict the exploration rates
                 e = [1.0, 0.5, eps]
                 erates = []
                 for i in range(n_actors):
