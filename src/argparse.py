@@ -120,17 +120,8 @@ def update_args(args, config_parser_dict):
     args.save_t = int(config_parser_dict['neural_network_param']['save_t'])
     args.save = config_parser_dict['neural_network_param']['save'] == "true" or config_parser_dict['neural_network_param']['save'] == "True"
     args.load = config_parser_dict['neural_network_param']['load'] == "true" or config_parser_dict['neural_network_param']['load'] == "True"
-    # TODO: fix the following
-    # save_path = saved_models
-    # save_replay = saved_replays
-    # load_replay = false
-    #
-    # save_t = 100
-    # save = false
-    # load = false
-    #
-    # [ddpg_rl_param]
-    # tau = 0.005
-    # g_max = 30
+
+    args.tau = float(config_parser_dict['ddpg_rl_param']['tau'])
+    args.g_max = float(config_parser_dict['ddpg_rl_param']['g_max'])
     return args
 
